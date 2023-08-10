@@ -1,0 +1,119 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>how to store textarea value in database in php</title>
+<style>
+body{
+	font-family:verdana;
+}
+
+label{
+	font-weight:400;
+	margin:10px 0px;
+	display:block;
+	color:#ee0000;
+}
+
+textarea{
+	border:1px solid #eeeeee;
+}
+
+input[type=submit]{
+	background:#ee0000;
+	border:1px solid #ee0000;
+	color:#ffffff;
+	height:30px;
+	display:block;
+	margin:10px 0px;
+}
+
+input[type=submit]:hover{
+	background:#ff5858;
+	border:1px solid #ff5858;
+	cursor:pointer;
+}
+
+.success-msg{
+	background:#15a869;
+	border:1px solid #15a869;
+	color:#ffffff;
+	width:33%;
+}
+</style>
+
+</head>
+<body>
+	
+	<form action="TEXT.php" method="post">
+		
+		<label>Textarea:</label>
+		
+		<div>
+			<textarea id="transcript" rows="10" cols="60" name="content" required></textarea>
+		</div>
+		
+        <button id="recordButton" onclick="startRecording()">Record</button>
+        <button id="stopButton" onclick="stopRecording()" disabled>Stop</button>
+		<input type="submit" name="submit" value="Submit">
+		
+	</form>
+
+
+    <script>
+        let recognition;
+    
+        // Start recording
+        function startRecording() {
+          recognition = new webkitSpeechRecognition();
+          recognition.continuous = true;
+          recognition.interimResults = true;
+          recognition.lang = 'en';
+
+    
+          recognition.onstart = function(event) {
+            console.log('Recording started');
+            document.getElementById('recordButton').disabled = true;
+            document.getElementById('stopButton').disabled = false;
+          };
+    
+          recognition.onresult = function(event) {
+            var transcript = '';
+            for (var i = event.resultIndex; i < event.results.length; i++) {
+              if (event.results[i].isFinal) {
+                transcript += event.results[i][0].transcript;
+              }
+            }
+            document.getElementById('transcript').value = transcript;
+          };
+    
+          recognition.onerror = function(event) {
+            console.log('Error: ' + event.error);
+          };
+    
+          recognition.onend = function() {
+            console.log('Recording stopped');
+            document.getElementById('recordButton').disabled = false;
+            document.getElementById('stopButton').disabled = true;
+          };
+    
+          recognition.start();
+        }
+    
+        // Stop recording
+        function stopRecording() {
+          recognition.stop();
+        }
+    
+        // Submit form
+        document.getElementById('transcriptForm').addEventListener('submit', function(event) {
+          event.preventDefault();
+          var transcript = document.getElementById('transcript').value;
+          // Process the transcript or send it to the server
+          console.log('Transcript:', transcript);
+        });
+      </script>
+    
+</body>
+</html>
